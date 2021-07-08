@@ -1,1 +1,4 @@
 dataset
+lenet/__pycache__
+vgg/__pycache__
+__pycache__

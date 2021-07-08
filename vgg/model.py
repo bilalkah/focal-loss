@@ -1,9 +1,6 @@
 import torch
 import torch.nn as nn
-try:
-    import config
-except ModuleNotFoundError:
-    print("Absolute import failed")
+import torch.functional as F
 
 try:
     from . import config
@@ -54,12 +51,11 @@ class VGG(nn.Module):
             fc.append(FC(in_features,layer))
             in_features = layer
         fc.append(FC(in_features,classNum))
-        fc.append(nn.Sigmoid())
         return nn.Sequential(*fc)
 
     def forward(self,x):
         x = self.features(x).reshape(x.shape[0],-1)
-        return self.fc(x)
+        return nn.Softmax()(self.fc(x))
 
 
 def test():
