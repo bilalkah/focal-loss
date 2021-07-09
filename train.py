@@ -15,11 +15,11 @@ from time import sleep
 import torchmetrics
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
+print(device)
 num_classes = 10
 lr = 1e-3
 batch_size = 128
-epochs = 100
+epochs = 10
 
 dataset = datasets.MNIST(
     root = 'dataset/',
@@ -28,11 +28,24 @@ dataset = datasets.MNIST(
     download=True,
 )
 
-train_dataset,val_set = data.random_split(dataset,[10000,50000])
+#train_dataset,val_set = data.random_split(dataset,[10000,50000])
 
 train_loader = DataLoader(
-    dataset=train_dataset,
+    dataset=dataset,
     batch_size=batch_size,
+    shuffle=True,
+)
+
+test = datasets.MNIST(
+    root = 'dataset/',
+    train=False,
+    transform=Compose([transforms.ToTensor(),transforms.Resize(size=(32,32))]),
+    download=True,
+)
+
+test_loader = DataLoader(
+    dataset=test,
+    batch_size=64,
     shuffle=True,
 )
 
@@ -46,7 +59,6 @@ optimizer = optim.Adam(model.parameters(),lr=lr)
 metric = torchmetrics.Accuracy().to(device)
 
 for epoch in range(epochs):
-    n=0
     with tqdm.tqdm(train_loader,unit="batch") as tepoch:
         tepoch.set_description(f"Epoch {epoch}")
         for data, target in tepoch:
@@ -65,4 +77,21 @@ for epoch in range(epochs):
             
             tepoch.set_postfix(CFocal = criterion(scores,target).item(),CustomCE = criterion2(scores,target).item(),Official_loss=criterion1(scores,target).item(),accuracy = train_acc.item())
             sleep(0.1)
+
+
+with tqdm.tqdm(train_loader,unit="batch") as tepoch:
+    tepoch.set_description(f"Evaluate")
+    for data, target in tepoch:
+            
+        data, target = data.to(device), target.to(device)
+
+        scores = model(data)
+            
+        loss = criterion(scores, target)
+        
+        train_acc = metric(scores,target)        
+            
+        tepoch.set_postfix(CFocal = criterion(scores,target).item(),CustomCE = criterion2(scores,target).item(),Official_loss=criterion1(scores,target).item(),accuracy = train_acc.item())
+        sleep(0.1)
+
 

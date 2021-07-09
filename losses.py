@@ -3,11 +3,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
-"""
-https://www.kaggle.com/bigironsphere/loss-function-library-keras-pytorch?scriptVersionId=51446304&cellId=13
-0 <= alpha <= 1
-0 <= gamma <=5
-"""
 class CategoricalCrossentropy(nn.Module):
     def __init__(self,epsilon=1e-9):
         super(CategoricalCrossentropy,self).__init__()
@@ -24,6 +19,10 @@ class CategoricalCrossentropy(nn.Module):
         return torch.mean(loss)
 
 class CFocalLoss(nn.Module):
+    """
+    0 <= alpha <= 1
+    0 <= gamma <=5
+    """
     def __init__(self,alpha=0.5,gamma=1.3,epsilon=1e-9,weight=None,size_average=True) -> None:
         super(CFocalLoss,self).__init__()
         self.alpha = alpha
@@ -53,6 +52,11 @@ class BinaryCrossentropy(nn.Module):
         pred = pred.view(2)
         return -torch.mean(target*torch.log2(pred[0])+(1-target)*torch.log2(1-pred[0]))
 
+
+
+"""
+https://www.kaggle.com/bigironsphere/loss-function-library-keras-pytorch?scriptVersionId=51446304&cellId=13
+"""
 class BFocalLoss(nn.Module):
     def __init__(self, weight=None, size_average=True):
         super(BFocalLoss, self).__init__()
