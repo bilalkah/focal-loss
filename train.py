@@ -15,16 +15,16 @@ from time import sleep
 import torchmetrics
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-print(device)
+
 num_classes = 10
 lr = 1e-3
 batch_size = 128
-epochs = 10
+epochs = 200
 
-dataset = datasets.MNIST(
+dataset = datasets.CIFAR10(
     root = 'dataset/',
     train=True,
-    transform=Compose([transforms.ToTensor(),transforms.Resize(size=(32,32))]),
+    transform=Compose([transforms.ToTensor(),transforms.Resize(size=(224,224))]),
     download=True,
 )
 
@@ -36,16 +36,16 @@ train_loader = DataLoader(
     shuffle=True,
 )
 
-test = datasets.MNIST(
+test = datasets.CIFAR10(
     root = 'dataset/',
     train=False,
-    transform=Compose([transforms.ToTensor(),transforms.Resize(size=(32,32))]),
+    transform=Compose([transforms.ToTensor(),transforms.Resize(size=(224,224))]),
     download=True,
 )
 
 test_loader = DataLoader(
     dataset=test,
-    batch_size=64,
+    batch_size=batch_size,
     shuffle=True,
 )
 
