@@ -3,17 +3,13 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
-"""
-https://www.kaggle.com/bigironsphere/loss-function-library-keras-pytorch?scriptVersionId=51446304&cellId=13
-0 <= alpha <= 1
-0 <= gamma <=5
-"""
 class CategoricalCrossentropy(nn.Module):
     def __init__(self,epsilon=1e-9):
         super(CategoricalCrossentropy,self).__init__()
         self.epsilon = epsilon
 
     def forward(self,pred,target):
+        pred = F.softmax(pred,dim=0)
         tar = torch.tensor([[0.]*pred.shape[1]]*pred.shape[0],dtype=torch.float,device='cuda' if torch.cuda.is_available() else 'cpu')
         for idx1,idx2 in enumerate(target):
             tar[idx1][idx2.item()] = 1.
@@ -31,7 +27,7 @@ class CFocalLoss(nn.Module):
         self.epsilon = epsilon
 
     def forward(self,pred,target):
-        
+        pred = F.softmax(pred,dim=0)
         tar = torch.tensor([[0.]*pred.shape[1]]*pred.shape[0],dtype=torch.float,device='cuda' if torch.cuda.is_available() else 'cpu')
         for idx1,idx2 in enumerate(target):
             tar[idx1][idx2.item()] = 1.
@@ -54,6 +50,13 @@ class BinaryCrossentropy(nn.Module):
         return -torch.mean(target*torch.log2(pred[0])+(1-target)*torch.log2(1-pred[0]))
 
 class BFocalLoss(nn.Module):
+    
+    """
+    https://www.kaggle.com/bigironsphere/loss-function-library-keras-pytorch?scriptVersionId=51446304&cellId=13
+    0 <= alpha <= 1
+    0 <= gamma <=5
+    """
+    
     def __init__(self, weight=None, size_average=True):
         super(BFocalLoss, self).__init__()
 

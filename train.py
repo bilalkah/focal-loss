@@ -55,7 +55,7 @@ for epoch in range(epochs):
             optimizer.zero_grad()
             scores = model(data)
             
-            loss = criterion(scores, target)
+            loss = criterion1(scores, target)
             
             train_acc = metric(scores,target)        
             
@@ -63,6 +63,6 @@ for epoch in range(epochs):
             loss.backward()
             optimizer.step()
             
-            tepoch.set_postfix(CFocal = criterion(scores,target).item(),CustomCE = criterion2(scores,target).item(),Official_loss=criterion1(scores,target).item(),accuracy = train_acc.item())
+            tepoch.set_postfix(Official_loss=criterion1(scores,target).item(),accuracy = train_acc.item())
             sleep(0.1)
 

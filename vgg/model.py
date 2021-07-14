@@ -20,7 +20,7 @@ class FC(nn.Module):
         return self.relu(self.fc(x))
 
 class VGG(nn.Module):
-    def __init__(self,version,classNum):
+    def __init__(self,version="D",classNum=10):
         super(VGG,self).__init__()
         self._version = version
         self.arch = config.ConvNet_Config[self._version]
@@ -55,7 +55,7 @@ class VGG(nn.Module):
 
     def forward(self,x):
         x = self.features(x).reshape(x.shape[0],-1)
-        return nn.Softmax()(self.fc(x))
+        return self.fc(x)#nn.Softmax()(self.fc(x))
 
 
 def test():

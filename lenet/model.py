@@ -35,6 +35,7 @@ class LeNet(nn.Module):
         x = torch.tanh(self.conv3(x))
         x = x.reshape(x.shape[0],-1)
         x = torch.tanh(self.fc1(x))
-        x = F.softmax(self.fc2(x),dim=0)
+        x = self.fc2(x)
+        #x = F.softmax(x,dim=0)
         return x
 
