@@ -36,5 +36,5 @@ ConvNet_Config = {
     ],
 }
 
-FullyConnected = [4096,4096]
+FullyConnected = [512,512]
 

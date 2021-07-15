@@ -19,6 +19,7 @@ class FC(nn.Module):
     def forward(self,x):
         return self.relu(self.fc(x))
 
+
 class VGG(nn.Module):
     def __init__(self,version="D",classNum=10):
         super(VGG,self).__init__()

@@ -1,8 +1,5 @@
-from torch._C import dtype
 from torchvision.transforms.transforms import Compose
 from vgg.model import VGG
-from lenet.model import LeNet
-import losses
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -18,8 +15,8 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 num_classes = 10
 lr = 1e-3
-batch_size = 128
-epochs = 200
+batch_size = 1
+epochs = 10
 
 dataset = datasets.CIFAR10(
     root = 'dataset/',
@@ -28,15 +25,15 @@ dataset = datasets.CIFAR10(
     download=True,
 )
 
-#train_dataset,val_set = data.random_split(dataset,[10000,50000])
+train_dataset,val_set = data.random_split(dataset,[10000,40000])
 
 train_loader = DataLoader(
-    dataset=dataset,
+    dataset=train_dataset,
     batch_size=batch_size,
     shuffle=True,
 )
 
-test = datasets.CIFAR10(
+"""test = datasets.CIFAR10(
     root = 'dataset/',
     train=False,
     transform=Compose([transforms.ToTensor(),transforms.Resize(size=(224,224))]),
@@ -47,14 +44,12 @@ test_loader = DataLoader(
     dataset=test,
     batch_size=batch_size,
     shuffle=True,
-)
+)"""
 
 
-model = LeNet().to(device)
+model = VGG("A").to(device)
 
-criterion2 = losses.CategoricalCrossentropy()
 criterion1 = nn.CrossEntropyLoss()
-criterion = losses.CFocalLoss(alpha=0.8,gamma=2)
 optimizer = optim.Adam(model.parameters(),lr=lr)
 metric = torchmetrics.Accuracy().to(device)
 
@@ -75,7 +70,7 @@ for epoch in range(epochs):
             loss.backward()
             optimizer.step()
             
-            tepoch.set_postfix(Official_loss=criterion1(scores,target).item(),accuracy = train_acc.item())
+            tepoch.set_postfix(Official_loss=loss.item(),accuracy = train_acc.item())
             sleep(0.1)
 
 
