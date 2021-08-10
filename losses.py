@@ -24,17 +24,17 @@ class CFocalLoss(nn.Module):
     0 <= alpha <= 1
     0 <= gamma <=5
     """
-    def __init__(self,alpha=0.5,gamma=1.3,epsilon=1e-9,weight=None,size_average=True) -> None:
+    def __init__(self,alpha=0.5,gamma=2,epsilon=1e-9,weight=None,size_average=True) -> None:
         super(CFocalLoss,self).__init__()
         self.alpha = alpha
         self.gamma = gamma
         self.epsilon = epsilon
 
     def forward(self,pred,target):
-        pred = F.softmax(pred,dim=0)
+        pred = F.softmax(pred,dim=1)
         tar = torch.tensor([[0.]*pred.shape[1]]*pred.shape[0],dtype=torch.float,device='cuda' if torch.cuda.is_available() else 'cpu')
         for idx1,idx2 in enumerate(target):
-            tar[idx1][idx2.item()] = 1.
+            tar[idx1][int(idx2.item())] = 1.
         pred = pred + self.epsilon
         loss = torch.tensor([0.]*pred.shape[0],dtype=torch.float,device='cuda' if torch.cuda.is_available() else 'cpu')
         for idx in range(target.shape[0]):
