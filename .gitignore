@@ -9,3 +9,8 @@ digit-recognizer/*
 notes.txt
 .vscode/*
 cinic10/*
+ann.py
+dataset_split.py
+main.py
+mnist_split.py
+test.ipynb
