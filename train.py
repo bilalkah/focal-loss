@@ -38,7 +38,8 @@ train_loader = DataLoader(
 model = VGG("A").to(device)
 
 criterion1 = losses.CFocalLoss(alpha=0.8,gamma=3)
-optimizer = optim.Adam(model.parameters(),lr=lr)
+optimizer = optim.Adam(model.parameters(),lr=lr,weight_decay=1e-4)
+
 metric = torchmetrics.Accuracy().to(device)
 
 for epoch in range(epochs):

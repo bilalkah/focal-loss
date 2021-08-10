@@ -14,10 +14,13 @@ class FC(nn.Module):
             in_features=in_features,
             out_features=out_features
         )
+        self.dropout = None
+        if out_features != 10:
+            self.dropout = nn.Dropout(p=0.2)
         self.relu = nn.ReLU()
     
     def forward(self,x):
-        return self.relu(self.fc(x))
+        return self.relu(self.fc(x)) if self.dropout is None else self.dropout(self.relu(self.fc(x)))
 
 
 class VGG(nn.Module):
