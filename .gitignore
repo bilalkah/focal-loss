@@ -14,3 +14,5 @@ dataset_split.py
 main.py
 mnist_split.py
 test.ipynb
+weights/*
+text/*

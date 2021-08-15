@@ -54,12 +54,12 @@ class VGG(nn.Module):
         for _ , layer in enumerate(config.FullyConnected):
             fc.append(FC(in_features,layer))
             in_features = layer
-        fc.append(FC(in_features,classNum))
+        fc.append(nn.Linear(in_features,classNum))
         return nn.Sequential(*fc)
 
     def forward(self,x):
         x = self.features(x).reshape(x.shape[0],-1)
-        return self.fc(x)#nn.Softmax()(self.fc(x))
+        return self.fc(x)
 
 
 def test():

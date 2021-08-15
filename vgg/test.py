@@ -9,12 +9,14 @@ import torchvision.transforms as transforms
 import tqdm
 from time import sleep
 import torchmetrics
+from torchvision.transforms.transforms import Compose
+import losses
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 num_classes = 10
 lr = 1e-4
-batch_size = 1
+batch_size = 16
 epochs = 10
 
 # create dataset from directory "cinic10" for torchvision
@@ -33,10 +35,10 @@ test_loader = DataLoader(
 )
 
 model = VGG("A").to(device)
-model.load_state_dict(torch.load("./saved_model"))
+model.load_state_dict(torch.load("./saved_model_1"))
 model.eval()
 
-criterion1 = nn.CrossEntropyLoss()
+criterion = losses.CFocalLoss(0.8,3)
 metric = torchmetrics.Accuracy().to(device)
 
 
@@ -54,7 +56,7 @@ with tqdm.tqdm(test_loader,unit="batch") as tepoch:
         epoch_loss.append(loss.item())
         epoch_acc.append(train_acc.item())  
             
-        tepoch.set_postfix(CFocal = criterion(scores,target).item(),CustomCE = criterion2(scores,target).item(),Official_loss=criterion1(scores,target).item(),accuracy = train_acc.item())
+        tepoch.set_postfix(CFocal = criterion(scores,target).item(),accuracy = train_acc.item())
         sleep(0.1)
     print(f"Epoch {epoch} avg loss: {sum(epoch_loss)/len(epoch_loss)} avg acc: {sum(epoch_acc)/len(epoch_acc)}")
     
@@ -88,6 +90,6 @@ with tqdm.tqdm(horse_loader,unit="batch") as tepoch:
         epoch_loss.append(loss.item())
         epoch_acc.append(train_acc.item())  
             
-        tepoch.set_postfix(CFocal = criterion(scores,target).item(),CustomCE = criterion2(scores,target).item(),Official_loss=criterion1(scores,target).item(),accuracy = train_acc.item())
+        tepoch.set_postfix(CFocal = criterion(scores,target).item(),accuracy = train_acc.item())
         sleep(0.1)
     print(f"Epoch {epoch} avg loss: {sum(epoch_loss)/len(epoch_loss)} avg acc: {sum(epoch_acc)/len(epoch_acc)}")

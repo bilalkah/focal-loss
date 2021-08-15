@@ -30,18 +30,17 @@ class CFocalLoss(nn.Module):
         self.gamma = gamma
         self.epsilon = epsilon
 
-    def forward(self,pred,target):
-        pred = F.softmax(pred,dim=1)
-        tar = torch.tensor([[0.]*pred.shape[1]]*pred.shape[0],dtype=torch.float,device='cuda' if torch.cuda.is_available() else 'cpu')
-        for idx1,idx2 in enumerate(target):
-            tar[idx1][int(idx2.item())] = 1.
-        pred = pred + self.epsilon
-        loss = torch.tensor([0.]*pred.shape[0],dtype=torch.float,device='cuda' if torch.cuda.is_available() else 'cpu')
-        for idx in range(target.shape[0]):
-            loss[idx] = -torch.mean(
-                tar[idx]*self.alpha*torch.pow((1-pred[idx]),self.gamma)*torch.log2(pred[idx]) 
+    def forward(self,prediction,target):
+        pred = torch.clone(F.softmax(prediction,dim=1))
+        pred += self.epsilon
+        loss = torch.zeros(pred.shape[0],dtype=torch.float,device='cuda' if torch.cuda.is_available() else 'cpu')
+        for i, p in enumerate(pred):
+            tar = torch.zeros(pred.shape[1],dtype=torch.float,device='cuda' if torch.cuda.is_available() else 'cpu')
+            tar[target[i]] = 1.
+            loss[i] = -torch.mean(
+                tar*self.alpha*torch.pow((1-p),self.gamma)*torch.log2(p) 
                 + 
-                (1-tar[idx])*self.alpha*torch.pow((pred[idx]),self.gamma)*torch.log2(1-pred[idx])
+                (1-tar)*self.alpha*torch.pow((p),self.gamma)*torch.log2(1-p)
             )
         return torch.mean(loss)
 
